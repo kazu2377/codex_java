@@ -1,2 +1,69 @@
+# ===== Java / JVM の生成物 =====
+# コンパイル済みクラス
+*.class
+# 例外ダンプ / リプレイログ
+hs_err_pid*
+replay_pid*
+# 実行時ログ
+*.log
+logs/
+
+# ===== Maven 関連 =====
+# ビルド成果物はコミットしない
+target/
+# 既存の個別 ignore（互換のため維持）
 target/classes/
 target/test-classes/
+# Maven Wrapper はプロジェクトに含める（jar は除外しない）
+!.mvn/wrapper/maven-wrapper.jar
+# 計測などの一時ファイル
+.mvn/timing.properties
+
+# ===== ビルド成果物（任意で無視） =====
+# 通常は target/ を無視すれば不要だが、念のため
+*.jar
+*.war
+
+# ===== Spring Boot 設定（ローカル/秘密情報） =====
+# ローカル用または秘匿が必要な設定は除外
+application-local.properties
+application-local.yml
+application-*.local.properties
+application-*.local.yml
+
+# ===== 環境変数ファイル =====
+# シークレットはコミット禁止。サンプルのみ許可
+.env
+.env.*
+!.env.example
+
+# ===== IDE / エディタ =====
+# IntelliJ
+.idea/
+*.iml
+# Eclipse
+.project
+.classpath
+.settings/
+# VS Code
+.vscode/
+# 一時スワップ
+*.swp
+
+# ===== OS 固有 =====
+.DS_Store
+Thumbs.db
+
+# ===== テスト出力 / カバレッジ =====
+surefire-reports/
+failsafe-reports/
+jacoco.exec
+
+# ===== 静的アセット（ビルド生成物） =====
+# フロントビルド成果物を出力する場合は無視
+src/main/resources/static/build/
+src/main/resources/static/dist/
+
+# ===== ローカルDB（該当する場合） =====
+*.db
+*.sqlite
