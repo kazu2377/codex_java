@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>出席レポート</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:.4rem .6rem}</style>
+</head>
+<body>
+<header class="appbar">
+    <div class="appbar-title">出席レポート</div>
+    <nav class="appbar-nav">
+        <a th:href="@{/}">ホーム</a>
+        <a th:href="@{|/attendance/mark?date=${date}|}">この日の入力</a>
+    </nav>
+    
+</header>
+
+<main class="container">
+<div class="card">
+<form class="row" th:action="@{/attendance/report}" method="get" style="margin-bottom: .5rem;">
+    <div class="input-field">
+        <label>日付</label>
+        <input type="date" name="date" th:value="${date}" />
+    </div>
+    <div class="input-field" style="flex:1">
+        <label>検索</label>
+        <input type="text" name="q" th:value="${q}" placeholder="氏名・学籍番号" />
+    </div>
+    <div class="input-field">
+        <label>ステータス</label>
+        <select name="status">
+            <option th:selected="${status == null}" value="">すべて</option>
+            <option th:each="st : ${statuses}"
+                    th:value="${st}"
+                    th:selected="${status == st}"
+                    th:text="${st}"></option>
+        </select>
+    </div>
+    <button class="btn" type="submit">絞り込み</button>
+    <a class="btn outlined" th:href="@{/attendance/report}">今日</a>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>学籍番号</th>
+        <th>氏名</th>
+        <th>日付</th>
+        <th>ステータス</th>
+        <th>メモ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="r : ${records}">
+        <td th:text="${r.student.studentNumber}"></td>
+        <td th:text="${r.student.name}"></td>
+        <td th:text="${r.date}"></td>
+        <td th:text="${r.status}"></td>
+        <td th:text="${r.note}"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr><td colspan="5" th:text="${#lists.size(records)} + ' 件'"></td></tr>
+    </tfoot>
+</table>
+</div>
+</main>
+<script defer th:src="@{/js/app.js}"></script>
+</body>
+</html>

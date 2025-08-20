@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>出席管理 - ホーム</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>body{max-width:960px;margin:2rem auto;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}</style>
+    
+</head>
+<body>
+<header class="appbar">
+    <div class="appbar-title">出席管理</div>
+    <nav class="appbar-nav">
+        <a th:href="@{/students}">学生</a>
+        <a th:href="@{/attendance/mark}">入力</a>
+        <a th:href="@{/attendance/report}">レポート</a>
+        <a th:href="@{/h2-console}" target="_blank">H2</a>
+    </nav>
+    
+</header>
+<main class="container">
+    <div class="card">
+        <h1 class="card-title">出席管理システム</h1>
+        <p>上部ナビから機能を選択してください。</p>
+        <div class="actions">
+            <a class="btn" th:href="@{/students}">学生一覧／登録</a>
+            <a class="btn" th:href="@{/attendance/mark}">出席入力</a>
+            <a class="btn" th:href="@{/attendance/report}">出席レポート</a>
+        </div>
+    </div>
+    
+</main>
+<script defer th:src="@{/js/app.js}"></script>
+</body>
+</html>
