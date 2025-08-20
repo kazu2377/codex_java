@@ -1,10 +1,13 @@
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\AttendanceApplication.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\repository\StudentRepository.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\controller\StudentController.java
-C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\controller\HomeController.java
+C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\controller\PersonController.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\service\AttendanceService.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\controller\AttendanceController.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\repository\AttendanceRepository.java
+C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\domain\Student.java
+C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\controller\HomeController.java
+C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\repository\PersonRepository.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\domain\Attendance.java
 C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\domain\AttendanceStatus.java
-C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\domain\Student.java
+C:\Users\jtths\Desktop\codex_java\src\main\java\com\example\attendance\model\Person.java

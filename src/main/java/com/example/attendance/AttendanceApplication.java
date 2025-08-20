@@ -5,23 +5,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.example.attendance.domain.Student;
-import com.example.attendance.repository.StudentRepository;
+import com.example.attendance.model.Person;
+import com.example.attendance.repository.PersonRepository;
+
+import java.util.List;
 
 @SpringBootApplication
 public class AttendanceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(AttendanceApplication.class, args);
     }
 
     @Bean
-    CommandLineRunner seedStudents(StudentRepository students) {
+    CommandLineRunner seed(PersonRepository repo) {
         return args -> {
-            if (students.count() == 0) {
-                students.save(new Student(null, "S001", "山田 太郎", true));
-                students.save(new Student(null, "S002", "佐藤 花子", true));
-                students.save(new Student(null, "S003", "鈴木 次郎", true));
+            if (repo.count() == 0) {
+                repo.saveAll(List.of(
+                        new Person(null, "Taro", "taro@example.com"),
+                        new Person(null, "Hanako", "hanako@example.com"),
+                        new Person(null, "Jiro", "jiro@example.com")
+                ));
             }
         };
     }
