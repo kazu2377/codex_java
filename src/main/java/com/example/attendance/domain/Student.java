@@ -24,6 +24,10 @@ public class Student {
     @Column(nullable = false)
     private boolean active = true;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id")
+    private SchoolClass schoolClass;
+
     public Student() {
     }
 
@@ -65,5 +69,12 @@ public class Student {
     public void setActive(boolean active) {
         this.active = active;
     }
-}
 
+    public SchoolClass getSchoolClass() {
+        return schoolClass;
+    }
+
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+    }
+}

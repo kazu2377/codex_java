@@ -30,6 +30,7 @@
         <th>ID</th>
         <th>学籍番号</th>
         <th>氏名</th>
+        <th>所属クラス</th>
         <th>状態</th>
         <th>操作</th>
     </tr>
@@ -39,6 +40,7 @@
         <td th:text="${s.id}"></td>
         <td th:text="${s.studentNumber}"></td>
         <td th:text="${s.name}"></td>
+        <td th:text="${s.schoolClass != null ? s.schoolClass.name : '-'}"></td>
         <td th:text="${s.active} ? '在籍' : '退席'"></td>
         <td>
             <a th:href="@{|/students/${s.id}/edit|}">編集</a>
@@ -49,7 +51,7 @@
     </tr>
     </tbody>
     <tfoot>
-    <tr><td colspan="5" th:text="${#lists.size(students)} + ' 名'"></td></tr>
+    <tr><td colspan="6" th:text="${#lists.size(students)} + ' 名'"></td></tr>
     </tfoot>
     </table>
 </div>

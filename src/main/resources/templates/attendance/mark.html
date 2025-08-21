@@ -23,6 +23,26 @@
         <label>日付</label>
         <input type="date" name="date" th:value="${date}" />
     </div>
+    <div class="input-field">
+        <label>クラス</label>
+        <select name="classId">
+            <option value="" th:selected="${classId == null}">すべて</option>
+            <option th:each="c : ${classes}"
+                    th:value="${c.id}"
+                    th:selected="${classId != null and classId == c.id}"
+                    th:text="${c.name}"></option>
+        </select>
+    </div>
+    <div class="input-field">
+        <label>教科</label>
+        <select name="subjectId">
+            <option value="" th:selected="${subjectId == null}">未選択</option>
+            <option th:each="s : ${subjects}"
+                    th:value="${s.id}"
+                    th:selected="${subjectId != null and subjectId == s.id}"
+                    th:text="${s.name + ' (' + s.code + ')'}"></option>
+        </select>
+    </div>
     <div class="input-field" style="flex:1">
         <label>検索</label>
         <input type="text" name="q" th:value="${q}" placeholder="氏名・学籍番号" />
@@ -33,6 +53,8 @@
 
 <form th:action="@{/attendance/mark}" method="post">
     <input type="hidden" name="date" th:value="${date}" />
+    <input type="hidden" name="subjectId" th:value="${subjectId}" />
+    <input type="hidden" name="classId" th:value="${classId}" />
     <table class="table">
         <thead>
         <tr>

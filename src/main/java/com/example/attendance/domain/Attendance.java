@@ -28,6 +28,10 @@ public class Attendance {
     @Column(length = 255)
     private String note;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
     public Attendance() {
     }
 
@@ -78,5 +82,12 @@ public class Attendance {
     public void setNote(String note) {
         this.note = note;
     }
-}
 
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+}

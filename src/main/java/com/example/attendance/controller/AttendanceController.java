@@ -13,34 +13,49 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.attendance.domain.AttendanceStatus;
 import com.example.attendance.service.AttendanceService;
+import com.example.attendance.repository.SchoolClassRepository;
+import com.example.attendance.repository.SubjectRepository;
 
 @Controller
 @RequestMapping("/attendance")
 public class AttendanceController {
 
     private final AttendanceService service;
+    private final SchoolClassRepository classRepository;
+    private final SubjectRepository subjectRepository;
     private static final DateTimeFormatter FMT = DateTimeFormatter.ISO_DATE;
 
-    public AttendanceController(AttendanceService service) {
+    public AttendanceController(AttendanceService service, SchoolClassRepository classRepository, SubjectRepository subjectRepository) {
         this.service = service;
+        this.classRepository = classRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @GetMapping("/mark")
     public String markForm(@RequestParam(name = "date", required = false)
                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                            @RequestParam(name = "q", required = false) String q,
+                           @RequestParam(name = "classId", required = false) Long classId,
+                           @RequestParam(name = "subjectId", required = false) Long subjectId,
                            Model model) {
         LocalDate target = date != null ? date : LocalDate.now();
         model.addAttribute("date", target.format(FMT));
         model.addAttribute("q", q == null ? "" : q);
-        model.addAttribute("students", service.activeStudents(q));
+        model.addAttribute("students", service.activeStudents(classId, q));
         model.addAttribute("existing", service.getAttendanceMapForDate(target));
         model.addAttribute("statuses", EnumSet.allOf(AttendanceStatus.class));
+        model.addAttribute("classes", classRepository.findAll());
+        model.addAttribute("subjects", subjectRepository.findAll());
+        // classId/subjectId をそのまま返してフォーム選択状態に使う
+        model.addAttribute("classId", classId);
+        model.addAttribute("subjectId", subjectId);
         return "attendance/mark";
     }
 
     @PostMapping("/mark")
     public String markSubmit(@RequestParam("date") String dateStr,
+                             @RequestParam(name = "subjectId", required = false) Long subjectId,
+                             @RequestParam(name = "classId", required = false) Long classId,
                              @RequestParam Map<String, String> params) {
         LocalDate date = LocalDate.parse(dateStr, FMT);
         Map<Long, AttendanceStatus> statuses = new HashMap<>();
@@ -56,18 +71,23 @@ public class AttendanceController {
                 notes.put(id, v);
             }
         });
-        service.markAttendance(date, statuses, notes);
-        return "redirect:/attendance/report?date=" + date.format(FMT);
+        service.markAttendance(date, subjectId, statuses, notes);
+        String redirect = "/attendance/report?date=" + date.format(FMT);
+        if (subjectId != null) redirect += "&subjectId=" + subjectId;
+        if (classId != null) redirect += "&classId=" + classId;
+        return "redirect:" + redirect;
     }
 
     @GetMapping("/report")
     public String report(@RequestParam(name = "date", required = false)
                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                          @RequestParam(name = "q", required = false) String q,
+                         @RequestParam(name = "classId", required = false) Long classId,
+                         @RequestParam(name = "subjectId", required = false) Long subjectId,
                          @RequestParam(name = "status", required = false) String statusParam,
                          Model model) {
         LocalDate target = date != null ? date : LocalDate.now();
-        var list = service.getAttendanceForDate(target);
+        var list = service.getAttendanceForDate(target, classId, subjectId);
         String query = q == null ? "" : q.trim().toLowerCase();
         if (!query.isEmpty()) {
             list = list.stream().filter(r -> {
@@ -92,6 +112,10 @@ public class AttendanceController {
         model.addAttribute("status", filterStatus);
         model.addAttribute("records", list);
         model.addAttribute("statuses", EnumSet.allOf(AttendanceStatus.class));
+        model.addAttribute("classes", classRepository.findAll());
+        model.addAttribute("subjects", subjectRepository.findAll());
+        model.addAttribute("classId", classId);
+        model.addAttribute("subjectId", subjectId);
         return "attendance/report";
     }
 }

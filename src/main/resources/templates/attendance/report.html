@@ -23,6 +23,26 @@
         <label>日付</label>
         <input type="date" name="date" th:value="${date}" />
     </div>
+    <div class="input-field">
+        <label>クラス</label>
+        <select name="classId">
+            <option value="" th:selected="${classId == null}">すべて</option>
+            <option th:each="c : ${classes}"
+                    th:value="${c.id}"
+                    th:selected="${classId != null and classId == c.id}"
+                    th:text="${c.name}"></option>
+        </select>
+    </div>
+    <div class="input-field">
+        <label>教科</label>
+        <select name="subjectId">
+            <option value="" th:selected="${subjectId == null}">すべて</option>
+            <option th:each="s : ${subjects}"
+                    th:value="${s.id}"
+                    th:selected="${subjectId != null and subjectId == s.id}"
+                    th:text="${s.name + ' (' + s.code + ')'}"></option>
+        </select>
+    </div>
     <div class="input-field" style="flex:1">
         <label>検索</label>
         <input type="text" name="q" th:value="${q}" placeholder="氏名・学籍番号" />
@@ -46,6 +66,7 @@
     <tr>
         <th>学籍番号</th>
         <th>氏名</th>
+        <th>教科</th>
         <th>日付</th>
         <th>ステータス</th>
         <th>メモ</th>
@@ -55,13 +76,14 @@
     <tr th:each="r : ${records}">
         <td th:text="${r.student.studentNumber}"></td>
         <td th:text="${r.student.name}"></td>
+        <td th:text="${r.subject != null ? r.subject.name : '-'}"></td>
         <td th:text="${r.date}"></td>
         <td th:text="${r.status}"></td>
         <td th:text="${r.note}"></td>
     </tr>
     </tbody>
     <tfoot>
-    <tr><td colspan="5" th:text="${#lists.size(records)} + ' 件'"></td></tr>
+    <tr><td colspan="6" th:text="${#lists.size(records)} + ' 件'"></td></tr>
     </tfoot>
 </table>
 </div>

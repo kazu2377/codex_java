@@ -13,10 +13,9 @@ public class PersonController {
         this.repository = repository;
     }
 
-    @GetMapping({"/", "/people"})
+    @GetMapping("/people")
     public String list(Model model) {
         model.addAttribute("people", repository.findAll());
         return "people";
     }
 }
-

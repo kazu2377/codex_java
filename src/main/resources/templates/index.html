@@ -13,6 +13,8 @@
     <div class="appbar-title">出席管理</div>
     <nav class="appbar-nav">
         <a th:href="@{/students}">学生</a>
+        <a th:href="@{/classes}">クラス</a>
+        <a th:href="@{/subjects}">教科</a>
         <a th:href="@{/attendance/mark}">入力</a>
         <a th:href="@{/attendance/report}">レポート</a>
         <a th:href="@{/h2-console}" target="_blank">H2</a>
@@ -25,6 +27,8 @@
         <p>上部ナビから機能を選択してください。</p>
         <div class="actions">
             <a class="btn" th:href="@{/students}">学生一覧／登録</a>
+            <a class="btn" th:href="@{/classes}">クラス一覧／登録</a>
+            <a class="btn" th:href="@{/subjects}">教科一覧／登録</a>
             <a class="btn" th:href="@{/attendance/mark}">出席入力</a>
             <a class="btn" th:href="@{/attendance/report}">出席レポート</a>
         </div>

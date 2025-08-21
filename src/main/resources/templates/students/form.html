@@ -27,6 +27,16 @@
         <small class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
     </div>
     <div class="input-field">
+        <label>所属クラス</label>
+        <select name="classId">
+            <option value="" th:selected="${selectedClassId == null}">未選択</option>
+            <option th:each="c : ${classes}"
+                    th:value="${c.id}"
+                    th:selected="${selectedClassId != null and selectedClassId == c.id}"
+                    th:text="${c.name}"></option>
+        </select>
+    </div>
+    <div class="input-field">
         <label>在籍</label>
         <input type="checkbox" th:field="*{active}" />
     </div>

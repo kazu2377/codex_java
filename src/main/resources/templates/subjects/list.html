@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>教科一覧</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:.4rem .6rem}</style>
+    </head>
+<body>
+<header class="appbar">
+    <div class="appbar-title">教科一覧</div>
+    <nav class="appbar-nav">
+        <a th:href="@{/}">ホーム</a>
+        <a th:href="@{/subjects/new}">新規登録</a>
+    </nav>
+    
+</header>
+<main class="container">
+<div class="card">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>コード</th>
+            <th>名称</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${subjects}">
+            <td th:text="${s.id}"></td>
+            <td th:text="${s.code}"></td>
+            <td th:text="${s.name}"></td>
+            <td>
+                <a th:href="@{|/subjects/${s.id}/edit|}">編集</a>
+                <form th:action="@{|/subjects/${s.id}/delete|}" method="post" style="display:inline" onsubmit="return confirm('削除しますか？')">
+                    <button type="submit">削除</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+            <tr><td colspan="4" th:text="${#lists.size(subjects)} + ' 件'"></td></tr>
+        </tfoot>
+    </table>
+</div>
+</main>
+<script defer th:src="@{/js/app.js}"></script>
+</body>
+</html>
+
