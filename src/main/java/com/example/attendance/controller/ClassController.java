@@ -1,18 +1,25 @@
 package com.example.attendance.controller;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.example.attendance.domain.SchoolClass;
 import com.example.attendance.domain.Subject;
 import com.example.attendance.repository.SchoolClassRepository;
 import com.example.attendance.repository.SubjectRepository;
-import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/classes")
@@ -28,7 +35,7 @@ public class ClassController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("classes", classRepository.findAllWithSubjects());
+        model.addAttribute("classes", classRepository.findAll());
         return "classes/list";
     }
 
@@ -42,9 +49,9 @@ public class ClassController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute("clazz") SchoolClass clazz,
-                         BindingResult bindingResult,
-                         @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
-                         Model model) {
+            BindingResult bindingResult,
+            @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
+            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allSubjects", subjectRepository.findAll());
             model.addAttribute("selectedSubjectIds", subjectIds == null ? List.of() : subjectIds);
@@ -70,10 +77,10 @@ public class ClassController {
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("clazz") SchoolClass clazz,
-                         BindingResult bindingResult,
-                         @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
-                         Model model) {
+            @Valid @ModelAttribute("clazz") SchoolClass clazz,
+            BindingResult bindingResult,
+            @RequestParam(value = "subjectIds", required = false) List<Long> subjectIds,
+            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allSubjects", subjectRepository.findAll());
             model.addAttribute("selectedSubjectIds", subjectIds == null ? List.of() : subjectIds);
