@@ -1,15 +1,22 @@
 package com.example.attendance.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.attendance.domain.SchoolClass;
 import com.example.attendance.domain.Student;
-import com.example.attendance.service.AttendanceService;
 import com.example.attendance.repository.SchoolClassRepository;
 import com.example.attendance.repository.StudentRepository;
+import com.example.attendance.service.AttendanceService;
 
 import jakarta.validation.Valid;
 
@@ -21,16 +28,21 @@ public class StudentController {
     private final SchoolClassRepository classRepository;
     private final StudentRepository studentRepository;
 
-    public StudentController(AttendanceService service, SchoolClassRepository classRepository, StudentRepository studentRepository) {
+    public StudentController(AttendanceService service, SchoolClassRepository classRepository,
+            StudentRepository studentRepository) {
         this.service = service;
         this.classRepository = classRepository;
         this.studentRepository = studentRepository;
     }
 
     @GetMapping
-    public String list(@RequestParam(name = "q", required = false) String q, Model model) {
+    public String list(@RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "classId", required = false) Long classId,
+            @PageableDefault(size = 20) Pageable pageable,
+            Model model) {
         model.addAttribute("q", q == null ? "" : q);
-        model.addAttribute("students", service.activeStudents(q));
+        model.addAttribute("students", service.activeStudents(classId, q, pageable));
+        model.addAttribute("classId", classId);
         return "students/list";
     }
 
@@ -44,9 +56,9 @@ public class StudentController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute("student") Student student,
-                         BindingResult bindingResult,
-                         @RequestParam(name = "classId", required = false) Long classId,
-                         Model model) {
+            BindingResult bindingResult,
+            @RequestParam(name = "classId", required = false) Long classId,
+            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("classes", classRepository.findAll());
             model.addAttribute("selectedClassId", classId);
@@ -75,10 +87,10 @@ public class StudentController {
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @Valid @ModelAttribute("student") Student student,
-                         BindingResult bindingResult,
-                         @RequestParam(name = "classId", required = false) Long classId,
-                         Model model) {
+            @Valid @ModelAttribute("student") Student student,
+            BindingResult bindingResult,
+            @RequestParam(name = "classId", required = false) Long classId,
+            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("classes", classRepository.findAll());
             model.addAttribute("selectedClassId", classId);
