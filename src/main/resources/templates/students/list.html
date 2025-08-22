@@ -1,68 +1,145 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>学生一覧</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        body{max-width:960px;margin:2rem auto;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-        table{border-collapse:collapse;width:100%;}
-        th,td{border:1px solid #e5e7eb;padding:.5rem;text-align:left;}
-        th{background:#f9fafb;}
-        .toolbar{display:flex;gap:.5rem;align-items:center;margin-bottom:1rem;}
-        .pager{display:flex;gap:.5rem;align-items:center;margin-top:1rem;}
-        a.btn,button.btn{display:inline-block;padding:.4rem .7rem;border:1px solid #d1d5db;border-radius:.375rem;background:#fff;color:#111827;text-decoration:none}
-        a.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
-        .muted{color:#6b7280}
+      body {
+        max-width: 960px;
+        margin: 2rem auto;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #e5e7eb;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+      }
+      .toolbar {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .pager {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-top: 1rem;
+      }
+      a.btn,
+      button.btn {
+        display: inline-block;
+        padding: 0.4rem 0.7rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background: #fff;
+        color: #111827;
+        text-decoration: none;
+      }
+      a.btn[aria-disabled="true"] {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .muted {
+        color: #6b7280;
+      }
+      .search-form {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
     </style>
-</head>
-<body>
-<header class="toolbar">
-    <h1 style="margin:0">学生一覧</h1>
-    <span class="muted" th:text="'全 ' + ${page.totalElements} + ' 件'">全 0 件</span>
-</header>
+  </head>
+  <body>
+    <header class="toolbar">
+      <h1 style="margin: 0">学生一覧</h1>
+      <span class="muted" th:text="'全 ' + ${page.totalElements} + ' 件'">全 0 件</span>
+      <form method="get" th:action="@{/students}" class="search-form">
+        <input type="hidden" name="sort" th:value="${sort}" />
+        <input type="hidden" name="dir" th:value="${dir}" />
+        <input type="hidden" name="size" th:value="${page.size}" />
+        <input name="q" type="search" placeholder="氏名/学籍番号で検索" th:value="${q}" />
+        <button class="btn" type="submit">検索</button>
+      </form>
+    </header>
 
-<table>
-    <thead>
-    <tr>
-        <th>
-            <a th:href="@{'/students'(sort='id',dir=${sort=='id'? toggleDir : dir},page=${page.number},size=${page.size})}">ID</a>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <a
+              th:href="@{'/students'(sort='id',dir=${sort=='id'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              >ID</a
+            >
             <span class="muted" th:if="${sort=='id'}" th:text="dir=='asc'?'▲':'▼'"></span>
-        </th>
-        <th>
-            <a th:href="@{'/students'(sort='studentNumber',dir=${sort=='studentNumber'? toggleDir : dir},page=${page.number},size=${page.size})}">学籍番号</a>
-            <span class="muted" th:if="${sort=='studentNumber'}" th:text="dir=='asc'?'▲':'▼'"></span>
-        </th>
-        <th>
-            <a th:href="@{'/students'(sort='name',dir=${sort=='name'? toggleDir : dir},page=${page.number},size=${page.size})}">氏名</a>
+          </th>
+          <th>
+            <a
+              th:href="@{'/students'(sort='studentNumber',dir=${sort=='studentNumber'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              >学籍番号</a
+            >
+            <span
+              class="muted"
+              th:if="${sort=='studentNumber'}"
+              th:text="dir=='asc'?'▲':'▼'"
+            ></span>
+          </th>
+          <th>
+            <a
+              th:href="@{'/students'(sort='name',dir=${sort=='name'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              >氏名</a
+            >
             <span class="muted" th:if="${sort=='name'}" th:text="dir=='asc'?'▲':'▼'"></span>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="s : ${page.content}">
-        <td th:text="${s.id}">1</td>
-        <td th:text="${s.studentNumber}">S0001</td>
-        <td th:text="${s.name}">山田 太郎</td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(page.content)}">
-        <td colspan="3" class="muted">データがありません</td>
-    </tr>
-    </tbody>
-</table>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="s : ${page.content}">
+          <td th:text="${s.id}">1</td>
+          <td th:text="${s.studentNumber}">S0001</td>
+          <td th:text="${s.name}">山田 太郎</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(page.content)}">
+          <td colspan="3" class="muted">データがありません</td>
+        </tr>
+      </tbody>
+    </table>
 
-<nav class="pager">
-    <a class="btn" th:href="@{'/students'(page=${page.number-1},size=${page.size},sort=${sort},dir=${dir})}"
-       th:aria-disabled="${page.first}" th:classappend="${page.first}?' disabled'">前へ</a>
-    <span class="muted" th:text="${page.number+1} + ' / ' + ${page.totalPages==0?1:page.totalPages}">1 / 1</span>
-    <a class="btn" th:href="@{'/students'(page=${page.number+1},size=${page.size},sort=${sort},dir=${dir})}"
-       th:aria-disabled="${page.last}" th:classappend="${page.last}?' disabled'">次へ</a>
+    <nav class="pager">
+      <a
+        class="btn"
+        th:href="@{'/students'(page=${page.number-1},size=${page.size},sort=${sort},dir=${dir},q=${q})}"
+        th:aria-disabled="${page.first}"
+        th:classappend="${page.first}?' disabled'"
+        >前へ</a
+      >
+      <span
+        class="muted"
+        th:text="${page.number+1} + ' / ' + ${page.totalPages==0?1:page.totalPages}"
+        >1 / 1</span
+      >
+      <a
+        class="btn"
+        th:href="@{'/students'(page=${page.number+1},size=${page.size},sort=${sort},dir=${dir},q=${q})}"
+        th:aria-disabled="${page.last}"
+        th:classappend="${page.last}?' disabled'"
+        >次へ</a
+      >
 
-    <span class="muted" style="margin-left:auto">表示件数:</span>
-    <a class="btn" th:href="@{'/students'(page=0,size=10,sort=${sort},dir=${dir})}">10</a>
-    <a class="btn" th:href="@{'/students'(page=0,size=20,sort=${sort},dir=${dir})}">20</a>
-    <a class="btn" th:href="@{'/students'(page=0,size=50,sort=${sort},dir=${dir})}">50</a>
-</nav>
-
-</body>
+      <span class="muted" style="margin-left: auto">表示件数:</span>
+      <a class="btn" th:href="@{'/students'(page=0,size=10,sort=${sort},dir=${dir},q=${q})}">10</a>
+      <a class="btn" th:href="@{'/students'(page=0,size=20,sort=${sort},dir=${dir},q=${q})}">20</a>
+      <a class="btn" th:href="@{'/students'(page=0,size=50,sort=${sort},dir=${dir},q=${q})}">50</a>
+    </nav>
+  </body>
 </html>
