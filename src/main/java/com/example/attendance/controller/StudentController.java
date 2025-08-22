@@ -1,115 +1,46 @@
 package com.example.attendance.controller;
 
+import com.example.attendance.domain.Student;
+import com.example.attendance.service.AttendanceService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.example.attendance.domain.SchoolClass;
-import com.example.attendance.domain.Student;
-import com.example.attendance.repository.SchoolClassRepository;
-import com.example.attendance.repository.StudentRepository;
-import com.example.attendance.service.AttendanceService;
-
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/students")
 public class StudentController {
+    private final AttendanceService attendanceService;
 
-    private final AttendanceService service;
-    private final SchoolClassRepository classRepository;
-    private final StudentRepository studentRepository;
-
-    public StudentController(AttendanceService service, SchoolClassRepository classRepository,
-            StudentRepository studentRepository) {
-        this.service = service;
-        this.classRepository = classRepository;
-        this.studentRepository = studentRepository;
+    public StudentController(AttendanceService attendanceService) {
+        this.attendanceService = attendanceService;
     }
 
     @GetMapping
-    public String list(@RequestParam(name = "q", required = false) String q,
-            @RequestParam(name = "classId", required = false) Long classId,
-            @PageableDefault(size = 20) Pageable pageable,
-            Model model) {
-        model.addAttribute("q", q == null ? "" : q);
-        model.addAttribute("students", service.activeStudents(classId, q, pageable));
-        model.addAttribute("classId", classId);
+    public String list(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "id") String sort,
+            @RequestParam(name = "dir", defaultValue = "asc") String dir,
+            Model model
+    ) {
+        String sortProp = switch (sort) {
+            case "name", "studentNumber", "id" -> sort; // allowlisted
+            default -> "id";
+        };
+        Sort.Direction direction = "desc".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(size, 50), Sort.by(direction, sortProp));
+        Page<Student> students = attendanceService.listStudents(pageable);
+
+        model.addAttribute("page", students);
+        model.addAttribute("sort", sortProp);
+        model.addAttribute("dir", direction.isAscending() ? "asc" : "desc");
+        model.addAttribute("toggleDir", direction.isAscending() ? "desc" : "asc");
         return "students/list";
-    }
-
-    @GetMapping("/new")
-    public String createForm(Model model) {
-        model.addAttribute("student", new Student());
-        model.addAttribute("classes", classRepository.findAll());
-        model.addAttribute("selectedClassId", null);
-        return "students/form";
-    }
-
-    @PostMapping
-    public String create(@Valid @ModelAttribute("student") Student student,
-            BindingResult bindingResult,
-            @RequestParam(name = "classId", required = false) Long classId,
-            Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("classes", classRepository.findAll());
-            model.addAttribute("selectedClassId", classId);
-            return "students/form";
-        }
-        student.setActive(true);
-        if (classId != null) {
-            SchoolClass clazz = classRepository.findById(classId).orElse(null);
-            student.setSchoolClass(clazz);
-        } else {
-            student.setSchoolClass(null);
-        }
-        service.saveStudent(student);
-        return "redirect:/students";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
-        Student s = studentRepository.findOneWithClassById(id).orElseThrow();
-        Long selected = (s.getSchoolClass() != null) ? s.getSchoolClass().getId() : null;
-        model.addAttribute("student", s);
-        model.addAttribute("classes", classRepository.findAll());
-        model.addAttribute("selectedClassId", selected);
-        return "students/form";
-    }
-
-    @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
-            @Valid @ModelAttribute("student") Student student,
-            BindingResult bindingResult,
-            @RequestParam(name = "classId", required = false) Long classId,
-            Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("classes", classRepository.findAll());
-            model.addAttribute("selectedClassId", classId);
-            return "students/form";
-        }
-        student.setId(id);
-        if (classId != null) {
-            SchoolClass clazz = classRepository.findById(classId).orElse(null);
-            student.setSchoolClass(clazz);
-        } else {
-            student.setSchoolClass(null);
-        }
-        service.saveStudent(student);
-        return "redirect:/students";
-    }
-
-    @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        service.deleteStudent(id);
-        return "redirect:/students";
     }
 }

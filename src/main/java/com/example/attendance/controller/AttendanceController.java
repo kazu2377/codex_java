@@ -4,17 +4,22 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.attendance.domain.Attendance;
 import com.example.attendance.domain.AttendanceStatus;
-import com.example.attendance.service.AttendanceService;
 import com.example.attendance.repository.SchoolClassRepository;
 import com.example.attendance.repository.SubjectRepository;
+import com.example.attendance.service.AttendanceService;
 
 @Controller
 @RequestMapping("/attendance")
@@ -25,19 +30,20 @@ public class AttendanceController {
     private final SubjectRepository subjectRepository;
     private static final DateTimeFormatter FMT = DateTimeFormatter.ISO_DATE;
 
-    public AttendanceController(AttendanceService service, SchoolClassRepository classRepository, SubjectRepository subjectRepository) {
+    public AttendanceController(AttendanceService service, SchoolClassRepository classRepository,
+            SubjectRepository subjectRepository) {
         this.service = service;
         this.classRepository = classRepository;
         this.subjectRepository = subjectRepository;
     }
 
     @GetMapping("/mark")
-    public String markForm(@RequestParam(name = "date", required = false)
-                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                           @RequestParam(name = "q", required = false) String q,
-                           @RequestParam(name = "classId", required = false) Long classId,
-                           @RequestParam(name = "subjectId", required = false) Long subjectId,
-                           Model model) {
+    public String markForm(
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "classId", required = false) Long classId,
+            @RequestParam(name = "subjectId", required = false) Long subjectId,
+            Model model) {
         LocalDate target = date != null ? date : LocalDate.now();
         model.addAttribute("date", target.format(FMT));
         model.addAttribute("q", q == null ? "" : q);
@@ -54,9 +60,9 @@ public class AttendanceController {
 
     @PostMapping("/mark")
     public String markSubmit(@RequestParam("date") String dateStr,
-                             @RequestParam(name = "subjectId", required = false) Long subjectId,
-                             @RequestParam(name = "classId", required = false) Long classId,
-                             @RequestParam Map<String, String> params) {
+            @RequestParam(name = "subjectId", required = false) Long subjectId,
+            @RequestParam(name = "classId", required = false) Long classId,
+            @RequestParam Map<String, String> params) {
         LocalDate date = LocalDate.parse(dateStr, FMT);
         Map<Long, AttendanceStatus> statuses = new HashMap<>();
         Map<Long, String> notes = new HashMap<>();
@@ -73,21 +79,23 @@ public class AttendanceController {
         });
         service.markAttendance(date, subjectId, statuses, notes);
         String redirect = "/attendance/report?date=" + date.format(FMT);
-        if (subjectId != null) redirect += "&subjectId=" + subjectId;
-        if (classId != null) redirect += "&classId=" + classId;
+        if (subjectId != null)
+            redirect += "&subjectId=" + subjectId;
+        if (classId != null)
+            redirect += "&classId=" + classId;
         return "redirect:" + redirect;
     }
 
     @GetMapping("/report")
-    public String report(@RequestParam(name = "date", required = false)
-                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                         @RequestParam(name = "q", required = false) String q,
-                         @RequestParam(name = "classId", required = false) Long classId,
-                         @RequestParam(name = "subjectId", required = false) Long subjectId,
-                         @RequestParam(name = "status", required = false) String statusParam,
-                         Model model) {
+    public String report(
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "classId", required = false) Long classId,
+            @RequestParam(name = "subjectId", required = false) Long subjectId,
+            @RequestParam(name = "status", required = false) String statusParam,
+            Model model) {
         LocalDate target = date != null ? date : LocalDate.now();
-        var list = service.getAttendanceForDate(target, classId, subjectId);
+        List<Attendance> list = service.getAttendanceForDate(target, classId, subjectId);
         String query = q == null ? "" : q.trim().toLowerCase();
         if (!query.isEmpty()) {
             list = list.stream().filter(r -> {
@@ -99,7 +107,10 @@ public class AttendanceController {
         final AttendanceStatus filterStatus;
         if (statusParam != null && !statusParam.isBlank()) {
             AttendanceStatus tmp = null;
-            try { tmp = AttendanceStatus.valueOf(statusParam); } catch (Exception ignored) {}
+            try {
+                tmp = AttendanceStatus.valueOf(statusParam);
+            } catch (Exception ignored) {
+            }
             filterStatus = tmp;
         } else {
             filterStatus = null;
