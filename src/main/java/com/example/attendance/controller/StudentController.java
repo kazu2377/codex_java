@@ -27,6 +27,7 @@ public class StudentController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sort", defaultValue = "id") String sort,
             @RequestParam(name = "dir", defaultValue = "asc") String dir,
+            @RequestParam(name = "q", required = false) String q,
             Model model
     ) {
         String sortProp = switch (sort) {
@@ -35,12 +36,13 @@ public class StudentController {
         };
         Sort.Direction direction = "desc".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(size, 50), Sort.by(direction, sortProp));
-        Page<Student> students = attendanceService.listStudents(pageable);
+        Page<Student> students = attendanceService.listStudents(q, pageable);
 
         model.addAttribute("page", students);
         model.addAttribute("sort", sortProp);
         model.addAttribute("dir", direction.isAscending() ? "asc" : "desc");
         model.addAttribute("toggleDir", direction.isAscending() ? "desc" : "asc");
+        model.addAttribute("q", q == null ? "" : q);
         return "students/list";
     }
 }

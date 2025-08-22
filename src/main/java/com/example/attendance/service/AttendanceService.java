@@ -30,6 +30,14 @@ public class AttendanceService {
         return studentRepository.findAll(pageable);
     }
 
+    public Page<Student> listStudents(String q, Pageable pageable) {
+        if (q == null || q.isBlank()) {
+            return listStudents(pageable);
+        }
+        String kw = q.trim();
+        return studentRepository.findByNameContainingIgnoreCaseOrStudentNumberContainingIgnoreCase(kw, kw, pageable);
+    }
+
     public List<Attendance> getAttendanceForDate(LocalDate date) {
         return attendanceRepository.findAllByDateOrderByStudent_StudentNumberAsc(date);
     }
