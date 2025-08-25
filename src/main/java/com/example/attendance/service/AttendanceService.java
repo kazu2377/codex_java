@@ -38,6 +38,20 @@ public class AttendanceService {
         return studentRepository.findByNameContainingIgnoreCaseOrStudentNumberContainingIgnoreCase(kw, kw, pageable);
     }
 
+    public Page<Student> listStudents(String q, Long classId, Pageable pageable) {
+        boolean hasQuery = q != null && !q.isBlank();
+        if (classId == null) {
+            return listStudents(q, pageable);
+        }
+        if (!hasQuery) {
+            return studentRepository.findBySchoolClass_Id(classId, pageable);
+        }
+        String kw = q.trim();
+        return studentRepository
+                .findBySchoolClass_IdAndNameContainingIgnoreCaseOrSchoolClass_IdAndStudentNumberContainingIgnoreCase(
+                        classId, kw, classId, kw, pageable);
+    }
+
     public List<Attendance> getAttendanceForDate(LocalDate date) {
         return attendanceRepository.findAllByDateOrderByStudent_StudentNumberAsc(date);
     }

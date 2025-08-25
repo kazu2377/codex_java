@@ -68,8 +68,16 @@
         <input type="hidden" name="sort" th:value="${sort}" />
         <input type="hidden" name="dir" th:value="${dir}" />
         <input type="hidden" name="size" th:value="${page.size}" />
+        <label class="muted" for="classId">クラス:</label>
+        <select name="classId" id="classId">
+          <option value="" th:selected="${classId} == null">すべて</option>
+          <option th:each="c : ${classes}"
+                  th:value="${c.id}"
+                  th:text="${c.name}"
+                  th:selected="${classId} != null and c.id == classId"></option>
+        </select>
         <input name="q" type="search" placeholder="氏名/学籍番号で検索" th:value="${q}" />
-        <button class="btn" type="submit">検索</button>
+        <button class="btn" type="submit">適用</button>
       </form>
     </header>
 
@@ -78,14 +86,14 @@
         <tr>
           <th>
             <a
-              th:href="@{'/students'(sort='id',dir=${sort=='id'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              th:href="@{'/students'(sort='id',dir=${sort=='id'? toggleDir : dir},page=${page.number},size=${page.size},q=${q},classId=${classId})}"
               >ID</a
             >
             <span class="muted" th:if="${sort=='id'}" th:text="dir=='asc'?'▲':'▼'"></span>
           </th>
           <th>
             <a
-              th:href="@{'/students'(sort='studentNumber',dir=${sort=='studentNumber'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              th:href="@{'/students'(sort='studentNumber',dir=${sort=='studentNumber'? toggleDir : dir},page=${page.number},size=${page.size},q=${q},classId=${classId})}"
               >学籍番号</a
             >
             <span
@@ -96,7 +104,7 @@
           </th>
           <th>
             <a
-              th:href="@{'/students'(sort='name',dir=${sort=='name'? toggleDir : dir},page=${page.number},size=${page.size},q=${q})}"
+              th:href="@{'/students'(sort='name',dir=${sort=='name'? toggleDir : dir},page=${page.number},size=${page.size},q=${q},classId=${classId})}"
               >氏名</a
             >
             <span class="muted" th:if="${sort=='name'}" th:text="dir=='asc'?'▲':'▼'"></span>
@@ -118,7 +126,7 @@
     <nav class="pager">
       <a
         class="btn"
-        th:href="@{'/students'(page=${page.number-1},size=${page.size},sort=${sort},dir=${dir},q=${q})}"
+        th:href="@{'/students'(page=${page.number-1},size=${page.size},sort=${sort},dir=${dir},q=${q},classId=${classId})}"
         th:aria-disabled="${page.first}"
         th:classappend="${page.first}?' disabled'"
         >前へ</a
@@ -130,16 +138,16 @@
       >
       <a
         class="btn"
-        th:href="@{'/students'(page=${page.number+1},size=${page.size},sort=${sort},dir=${dir},q=${q})}"
+        th:href="@{'/students'(page=${page.number+1},size=${page.size},sort=${sort},dir=${dir},q=${q},classId=${classId})}"
         th:aria-disabled="${page.last}"
         th:classappend="${page.last}?' disabled'"
         >次へ</a
       >
 
       <span class="muted" style="margin-left: auto">表示件数:</span>
-      <a class="btn" th:href="@{'/students'(page=0,size=10,sort=${sort},dir=${dir},q=${q})}">10</a>
-      <a class="btn" th:href="@{'/students'(page=0,size=20,sort=${sort},dir=${dir},q=${q})}">20</a>
-      <a class="btn" th:href="@{'/students'(page=0,size=50,sort=${sort},dir=${dir},q=${q})}">50</a>
+      <a class="btn" th:href="@{'/students'(page=0,size=10,sort=${sort},dir=${dir},q=${q},classId=${classId})}">10</a>
+      <a class="btn" th:href="@{'/students'(page=0,size=20,sort=${sort},dir=${dir},q=${q},classId=${classId})}">20</a>
+      <a class="btn" th:href="@{'/students'(page=0,size=50,sort=${sort},dir=${dir},q=${q},classId=${classId})}">50</a>
     </nav>
   </body>
 </html>

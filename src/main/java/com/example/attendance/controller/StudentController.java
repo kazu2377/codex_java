@@ -2,6 +2,7 @@ package com.example.attendance.controller;
 
 import com.example.attendance.domain.Student;
 import com.example.attendance.service.AttendanceService;
+import com.example.attendance.repository.SchoolClassRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/students")
 public class StudentController {
     private final AttendanceService attendanceService;
+    private final SchoolClassRepository classRepository;
 
-    public StudentController(AttendanceService attendanceService) {
+    public StudentController(AttendanceService attendanceService, SchoolClassRepository classRepository) {
         this.attendanceService = attendanceService;
+        this.classRepository = classRepository;
     }
 
     @GetMapping
@@ -28,6 +31,7 @@ public class StudentController {
             @RequestParam(name = "sort", defaultValue = "id") String sort,
             @RequestParam(name = "dir", defaultValue = "asc") String dir,
             @RequestParam(name = "q", required = false) String q,
+            @RequestParam(name = "classId", required = false) Long classId,
             Model model
     ) {
         String sortProp = switch (sort) {
@@ -36,13 +40,15 @@ public class StudentController {
         };
         Sort.Direction direction = "desc".equalsIgnoreCase(dir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(size, 50), Sort.by(direction, sortProp));
-        Page<Student> students = attendanceService.listStudents(q, pageable);
+        Page<Student> students = attendanceService.listStudents(q, classId, pageable);
 
         model.addAttribute("page", students);
         model.addAttribute("sort", sortProp);
         model.addAttribute("dir", direction.isAscending() ? "asc" : "desc");
         model.addAttribute("toggleDir", direction.isAscending() ? "desc" : "asc");
         model.addAttribute("q", q == null ? "" : q);
+        model.addAttribute("classes", classRepository.findAll());
+        model.addAttribute("classId", classId);
         return "students/list";
     }
 }
