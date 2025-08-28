@@ -1,15 +1,15 @@
 package com.example.attendance;
 
-import com.example.attendance.domain.Student;
-import com.example.attendance.repository.StudentRepository;
+import java.util.Locale;
+import java.util.stream.IntStream;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Locale;
-import java.util.Random;
-import java.util.stream.IntStream;
+import com.example.attendance.domain.Student;
+import com.example.attendance.repository.StudentRepository;
 
 @SpringBootApplication
 public class AttendanceApplication {
@@ -22,8 +22,8 @@ public class AttendanceApplication {
     @Bean
     CommandLineRunner seedStudents(StudentRepository repo) {
         return args -> {
-            if (repo.count() > 0) return;
-            Random r = new Random(42);
+            if (repo.count() > 0)
+                return;
             IntStream.rangeClosed(1, 50).forEach(i -> {
                 String name = "学生 " + i;
                 String sn = String.format(Locale.ROOT, "S%04d", i);
