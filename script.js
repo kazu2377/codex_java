@@ -30,6 +30,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
+  function greet() {
+    const name = document.getElementById("name").value;
+    // ✅ innerHTML ではなく textContent を使ってXSSを防ぐ
+    document.getElementById("result").textContent = "Hello, " + name;
+  }
+
 // スクロール出現
 const io = new IntersectionObserver(entries => {
   entries.forEach(entry => {
