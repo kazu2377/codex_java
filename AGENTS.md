@@ -1,101 +1,43 @@
-了解しました 👍
-先ほどのガイドラインを **Markdown ベースのドキュメントテンプレート** として整理しました。
-このまま `README.md` や `CONTRIBUTING.md` に貼り付けて利用できます。
+Repository Guidelines
 
----
+プロジェクト構成とモジュール
+- `src/main/java/com/example/attendance`: アプリケーションコード
+  - `controller/`: Webコントローラ（例: `PersonController`）
+  - `service/`: ビジネスロジック（例: `AttendanceService`）
+  - `repository/`: Spring Data JPA リポジトリ
+  - `domain/`・`model/`: JPAエンティティ／列挙型
+  - `AttendanceApplication.java`: Spring Boot エントリポイント
+- `src/main/resources`: 設定とビュー
+  - `application.yml`: データソース、JPA、サーバーポート
+  - `templates/`: Thymeleafビュー（例: `people.html`）
+  - `static/`: CSS/JS アセット
+- `src/test/java/...`: テスト配置場所
+- `pom.xml`: Maven ビルドと依存関係
+- ルートの `index.html`・`assets/`: UIプロトタイプ（任意）
 
-```markdown
-# リポジトリ ガイドライン
+ビルド・テスト・開発コマンド
+- ビルド: `mvn clean package` — `target/` にJARを生成。
+- 開発起動: `mvn spring-boot:run` — `http://localhost:8080` で起動。
+- JAR起動: `java -jar target/attendance-0.0.1-SNAPSHOT.jar`。
+- テスト: `mvn test`／単一クラスは `mvn -Dtest=ClassNameTest test`。
 
-## 📂 プロジェクト構成 & モジュール整理
-```
+コーディングスタイルと命名
+- Java 17・UTF-8・インデント4スペース。コントローラは薄く、ロジックは `service`、データアクセスは `repository` に配置。
+- パッケージ: 小文字／クラス・Enum: PascalCase（例: `AttendanceStatus`）／メソッド・フィールド: camelCase。
+- Thymeleaf: セマンティックHTMLを心がけ、小さく焦点の定まったテンプレート。
 
-src/main/java/com/example/attendance
-├── controller/ # Web コントローラ (例: PersonController)
-├── repository/ # Spring Data JPA リポジトリ (例: PersonRepository)
-├── model/ # JPA エンティティ (例: Person, Student, Attendance)
-└── domain/ # JPA エンティティ
+テストガイドライン
+- フレームワーク: JUnit 5（`spring-boot-starter-test`）。
+- 配置: `src/test/java/com/example/attendance/...`。
+- 命名: `*Test.java`（1クラス=1テストクラス）。
+- 優先カバレッジ: ドメインルール、リポジトリ、コントローラのエンドポイント。
 
-src/main/resources
-├── application.yml # データソース & JPA 設定
-├── templates/ # Thymeleaf ビュー (例: people.html)
-└── static/ # CSS / JS アセット
+コミットとプルリクエスト
+- Conventional Commits（例: `feat: add Person list view`, `fix: correct repository query`）。
+- PRは小さく焦点を絞り、説明、関連Issueリンク、UI変更（`templates/*`, `static/*`）はスクリーンショットを添付。
+- レビュー前にビルドし、ローカル起動で動作確認。
 
-pom.xml # Maven ビルド & 依存関係管理
-
-```
-
----
-
-## 🛠️ ビルド・テスト・開発コマンド
-- **ビルド**: `mvn clean package`
-  → `target/attendance-0.0.1-SNAPSHOT.jar` を生成
-- **実行（開発）**: `mvn spring-boot:run`
-  → `http://localhost:8080` で起動
-- **実行（jar）**: `java -jar target/attendance-0.0.1-SNAPSHOT.jar`
-- **テスト**: `mvn test`
-  → ユニットテストを実行
-
----
-
-## ✍️ コーディング規約 & 名前付け
-- **Javaバージョン**: 17
-- **インデント**: 4スペース
-- **文字コード**: UTF-8
-- **命名規則**:
-  - パッケージ: 小文字 (`com.example.attendance.controller`)
-  - クラス / Enum: `PascalCase` (例: `AttendanceStatus`)
-  - メソッド / フィールド: `camelCase`
-- **責務分割**:
-  - エンティティ: `model` / `domain`
-  - リポジトリ: `repository`
-  - コントローラ: `controller`
-- **テンプレート**: Thymeleafを使用。セマンティックHTMLを優先し、小規模かつ焦点の定まったビューを推奨
-
----
-
-## 🧪 テストガイドライン
-- **利用フレームワーク**: JUnit 5
-  （統合テストが必要な場合は `spring-boot-starter-test` を追加）
-- **配置場所**: `src/test/java/com/example/attendance/...`
-- **命名規則**: `*Test.java` （1クラス = 1テスト対象）
-- **実行例**:
-  - 全体: `mvn test`
-  - 特定クラス: `mvn -Dtest=ClassNameTest test`
-- **カバレッジ目標**: ドメイン、リポジトリ、コントローラを優先
-
----
-
-## 🔀 コミット & プルリクエスト規約
-- **コミットメッセージ**: Conventional Commits 準拠
-  - 例:
-    - `feat: add Person list view`
-    - `fix: correct repository query`
-- **PR**: 小規模で焦点の定まった変更を推奨
-  - 説明文必須
-  - 関連Issueをリンク
-  - UI変更（`templates/*`）はスクリーンショット添付
-- **事前チェック**: ローカルでビルド & 起動確認後にレビュー依頼
-
----
-
-## 🔒 セキュリティ & 設定の注意点
-- DB設定は環境変数で管理:
-  - `SPRING_DATASOURCE_URL`
-  - `SPRING_DATASOURCE_USERNAME`
-  - `SPRING_DATASOURCE_PASSWORD`
-- デフォルトJPA DDL: `update`
-  → 本番環境前に必ず見直し
-- シークレットはコミット禁止
-  → `.env` や CIシークレットを利用
-- ローカル開発時は **読み取り専用ユーザ** の利用も検討
-
----
-
-✅ このテンプレートをベースに、`README.md` に入れてもいいですし、
-**開発フロー系は `CONTRIBUTING.md`** に分けるのもおすすめです。
-
----
-
-こちら、`README.md` 向けと `CONTRIBUTING.md` 向け、両方の形に分けた方がよいですか？
-```
+セキュリティと設定のヒント
+- 環境変数でDB設定: `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`。
+- シークレットはコミット禁止。ローカルは `.env`、CIはシークレットを使用。
+- `spring.jpa.hibernate.ddl-auto=update` は開発向け。本番前に見直し、マイグレーションの利用を検討。
