@@ -30,6 +30,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
+  function greet() {
+    const name = document.getElementById("name").value;
+    // ❌ ユーザー入力を直接 innerHTML に代入している
+    document.getElementById("result").innerHTML = "Hello, " + name;
+  }
+
 // スクロール出現
 const io = new IntersectionObserver(entries => {
   entries.forEach(entry => {
