@@ -32,8 +32,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
   function greet() {
     const name = document.getElementById("name").value;
-    // ❌ ユーザー入力を直接 innerHTML に代入している
-    document.getElementById("result").innerHTML = "Hello, " + name;
+    // ✅ innerHTML ではなく textContent を使ってXSSを防ぐ
+    document.getElementById("result").textContent = "Hello, " + name;
   }
 
 // スクロール出現
